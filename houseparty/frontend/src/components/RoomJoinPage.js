@@ -24,7 +24,8 @@ export default function RoomJoinPage (){
         fetch('/api/join-room', requestOptions).then((response)=> 
             {
                 if (response.ok){
-                    history('/room/' + roomCode) }
+                    console.log(requestOptions);
+                    history('/room/' + roomCode); }
                 else{
                     setError("room not found.")
                 }
@@ -54,10 +55,10 @@ export default function RoomJoinPage (){
 
     return (
         
-        <Grid container pacing = {1} align="center">
+        <Grid container spacing = {1} align="center">
             <Grid item xs={12} align="center">
                 <Typography ariant = "h4" omponent="h4">
-                    Join a room
+                    Join a room 1
                 </Typography>
 
             </Grid>

@@ -1,37 +1,157 @@
 import React, { useState, useEffect } from 'react'
 import { useParams } from 'react-router-dom';
+import {Grid, Button, Typography} from "@material-ui/core";
+import {Link, useNavigate} from 'react-router-dom';
+import CreateRoomPage from './CreateRoomPage';
+
 
 export function Room(props) {
   const params = useParams();
-  const [roomCode, setRoomCode] = useState(params.roomCode)
+  const history = useNavigate();
+  const [roomCode, setRoomCode] = useState(params.roomCode);
+  const [showSetting, setShowSetting] = useState(false);
   const initialState = {
-    votesToSKip: 2,
+    votesToSkip: 2,
     guestCanPause: false,
     isHost: false
   }
   const [roomData, setRoomData] = useState(initialState) 
 
+  const requestOptions = {
+    method: "POST",
+    headers: {"Content-Type":"Japplication/json"},
+  };
+
+  function updateShowSettings(){
+
+    if (showSetting){
+      setShowSetting(false)
+    }
+    else{
+      setShowSetting(true)
+    }
+    console.log(showSetting);
+  }
+
+  const settingsButton = ()=>{
+  
+    return (
+      <Grid item xs = {12} align = "center">
+        <Button variant = "contained" color = "primary" onClick={updateShowSettings}>
+            Settings
+        </Button>
+      </Grid>
+    );
+  } 
+
+  const renderSettings = () =>{
+
+    return(
+      <Grid container spacing = {1}>
+        <Grid item xs={12} align="center">
+          <CreateRoomPage update = {true} votesToSkip ={roomData.votesToSkip} guestCanPause ={roomData.guestCanPause} roomCode = {roomCode} updateCallBack = {null}
+          />
+
+          
+
+        </Grid>
+        <Grid item xs={12} align="center">
+              <Button variant = "contained"
+                color = "primary"
+                onClick={updateShowSettings}>
+                  close
+                </Button>
+          
+        </Grid>
+      </Grid>
+
+
+    );
+  }
+
+  const leaveRoomPressed = ()=>{
+
+    fetch("/api/leave-room", requestOptions).then((_response) =>{
+      //props.leaveRoomCallback();
+      console.log(props);
+
+      history('/');
+    });
+    setRoomCode(null);
+
+
+  }
+
 
   useEffect(() => {
     fetch("/api/get-room" + "?code=" + roomCode)
-      .then(res => res.json())
+      .then(res => 
+        {
+
+        if(!res.ok){
+          //props.leaveRoomCallback();
+          history("/");
+          //console.log(roomCode);
+
+        }
+        return res.json();}
+        )
       .then(data => {
         setRoomData({
           ...roomData, 
-          votesToSKip: data.votes_to_skip,
+          votesToSkip: data.votes_to_skip,
           guestCanPause: data.guest_can_pause,
           isHost: data.is_host,
         })
       })
   },[roomCode,setRoomData]) //It renders when the object changes .If we use roomData and/or roomCode then it rerenders infinite times
+
+
   return (
+
     <div>
-      <h3>{roomCode}</h3>
-      <p>Votes: {roomData.votesToSKip}</p>  
-      <p>Guest: {roomData.guestCanPause.toString()}</p>
-      <p>Host: {roomData.isHost.toString()}</p>  
+
+      {showSetting? renderSettings():
+
+    <Grid container spacing ={1}>
+      <Grid item xs = {12} align = "center">
+        <Typography variant="h4" component ="h4">
+          Code: {roomCode}
+        </Typography>
+      </Grid>
+      <Grid item xs = {12} align = "center">
+        Guest can Pause: {roomData.guestCanPause.toString()}
+        
+      </Grid>
+      <Grid item xs = {12} align = "center">
+      Votes: {roomData.votesToSkip}
+        
+      </Grid>
+      <Grid item xs = {12} align = "center">
+      Host: {roomData.isHost.toString()}
+        
+      </Grid>
+
+      {roomData.isHost? 
+          settingsButton()
+          : null
+      }
+
+     
+      <Grid item xs = {12} align = "center">
+          <Button variant = "contained"
+                color = "primary"
+                onClick={leaveRoomPressed}>
+                  Leave Room
+                </Button>
+
+      </Grid>
+
+    </Grid>
+}
+  
     </div>
-  )
+    )
 }
 
 export default Room

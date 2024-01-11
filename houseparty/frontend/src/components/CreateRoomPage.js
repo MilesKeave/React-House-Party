@@ -13,11 +13,16 @@ import { useNavigate } from "react-router";
 import { useState } from "react";
 
 
-export default function CreateRoomPage(){
-    const defaultVotes = 2;
-    const [guestCanPause, setGuestCanPause] = useState(true);
-    const [votesToSkip, setVotesToSkip] = useState(defaultVotes);
+function CreateRoomPage(props){
+    
+
+     
+    //const [createRoomData, setCreateRoomData] = useState(defaultProps);
+    
+    const [guestCanPause, setGuestCanPause] = useState(props.guestCanPause);
+    const [votesToSkip, setVotesToSkip] = useState(props.votesToSkip);
     const history = useNavigate();
+   
 
     
 
@@ -41,17 +46,54 @@ export default function CreateRoomPage(){
     
 
     const handleRoomButtonPressed = () =>{
+        
         fetch("/api/create-room", requestOptions).then((response) => 
-        response.json()).then((data) => history("/room/" + data.code));
+        response.json()).then((data) => 
+        
+        history("/room/" + data.code));
 
     }
+
+
+
+    const renderCreateButtons =()=>{
+
+        return(
+            <Grid container spacing = {1}>
+
+                <Grid item xs = {12} align ="center">
+                    <Button color ="primary" variant = "contained" onClick = { handleRoomButtonPressed}>
+                        Create a Room
+                    </Button>
+                </Grid>
+                <Grid item xs = {12} align ="center">
+                    <Button color ="secondary" variant = "contained" to="/" component = {Link}>
+                        Back
+                    </Button>
+                </Grid>
+            </Grid>
+        );
+    }
+
+    const RenderUpdateButton = ()=>{
+
+        return(
+            <Grid item xs = {12} align ="center">
+                    <Button color ="primary" variant = "contained" onClick = { handleRoomButtonPressed}>
+                        Update a Room
+                    </Button>
+                </Grid>
+        );
+    }
+
+    const title = (props.update? "update Room": "CreateRoom");
 
     return(
 
          <Grid container spacing = {1} >
             <Grid item xs = {12} align = "center">
                 <Typography component = "h4" variant = "h4">
-                    Create A Room
+                    {title}
                 </Typography>
             </Grid>
             <Grid item xs = {12} align = "center">
@@ -83,7 +125,7 @@ export default function CreateRoomPage(){
                 <FormControl>
                     <TextField required = {true}
                                 type = "number"
-                                defaultValue =  {defaultVotes}
+                                defaultValue =  {votesToSkip}
                                 onChange = { handleVotesChange}
                                 inputProps = {{
                                     min: 1,
@@ -102,16 +144,7 @@ export default function CreateRoomPage(){
 
                 </FormControl>
             </Grid>
-            <Grid item xs = {12} align ="center">
-                <Button color ="primary" variant = "contained" onClick = { handleRoomButtonPressed}>
-                    Create a Room
-                </Button>
-            </Grid>
-            <Grid item xs = {12} align ="center">
-                <Button color ="secondary" variant = "contained" to="/" component = {Link}>
-                    Back
-                </Button>
-            </Grid>
+            {props.update? RenderUpdateButton(): renderCreateButtons()}
 
             
 
@@ -119,3 +152,12 @@ export default function CreateRoomPage(){
         </Grid>
     )
 }
+CreateRoomPage.defaultProps = {
+    votesToSkip: 2,
+    guestCanPause: true,
+    update: false,
+    roomCode: null,
+    updateCallBack: ()=>{},
+  };
+
+export default CreateRoomPage
