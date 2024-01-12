@@ -10,17 +10,37 @@ export function Room(props) {
   const history = useNavigate();
   const [roomCode, setRoomCode] = useState(params.roomCode);
   const [showSetting, setShowSetting] = useState(false);
+  const [spotifyAuthenticated, setSpotifyAuthenticated] = useState(false);
   const initialState = {
     votesToSkip: 2,
     guestCanPause: false,
     isHost: false
   }
-  const [roomData, setRoomData] = useState(initialState) 
+  const [roomData, setRoomData] = useState(initialState) ;
 
   const requestOptions = {
     method: "POST",
     headers: {"Content-Type":"Japplication/json"},
   };
+
+  function authenticateSpotify(){
+    fetch('/spotify/is-authenicated').then((response) => response.json()).then((data)=> {
+    setSpotifyAuthenticated(data.status);
+    {if(!data.status){
+      fetch("/spotify/get-auth-url").then((response)=> response.json()).then((data) => {
+          window.location.replace(data.url)
+
+      })
+
+
+
+    }}
+  }
+
+    );
+
+
+  }
 
   function updateShowSettings(){
 
@@ -64,7 +84,10 @@ export function Room(props) {
           votesToSkip: data.votes_to_skip,
           guestCanPause: data.guest_can_pause,
           isHost: data.is_host,
-        })
+        });
+        {if (roomData.isHost){
+          authenticateSpotify();
+        }}
       })
 
 
@@ -135,7 +158,11 @@ export function Room(props) {
           votesToSkip: data.votes_to_skip,
           guestCanPause: data.guest_can_pause,
           isHost: data.is_host,
-        })
+        });
+        {if (roomData.isHost){
+          authenticateSpotify();
+        }}
+       
       })
   },[roomCode,setRoomData]) //It renders when the object changes .If we use roomData and/or roomCode then it rerenders infinite times
 
