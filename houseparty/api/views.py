@@ -67,11 +67,11 @@ class CreateRoomView(APIView):
                 room = queryset[0]
                 room.guest_can_pause = guest_can_pause
                 room.votes_to_skip = votes_to_skip
-                self.request.session['room code'] = room.code
+                self.request.session['room_code'] = room.code
                 room.save(update_fields = ['guest_can_pause', 'votes_to_skip'])
             else:
                 room = Room(host = host, guest_can_pause = guest_can_pause, votes_to_skip = votes_to_skip)
-                self.request.session['room code'] = room.code
+                self.request.session['room_code'] = room.code
                 room.save()
 
             return Response(RoomSerializer(room).data, status=status.HTTP_201_CREATED)
@@ -91,13 +91,17 @@ class UserInRoom(APIView):
 
 class LeaveRoom(APIView):
     def post(self, request, format=None):
+        
+        print('room_code' in self.request.session)
         if 'room_code' in self.request.session:
             self.request.session.pop('room_code')
+            print(self.request.session)
             host_id = self.request.session.session_key
             room_result = Room.objects.filter(host=host_id)
             if len(room_result)>0:
                 room=room_result[0]
                 room.delete()
+       
         return Response({'Message': "success"}, status = status.HTTP_200_OK)
     
 
@@ -112,7 +116,7 @@ class UpdateRoom(APIView):
 
         serializer = self.serializer_class(data = request.data)
 
-        if serializer.isvalid():
+        if serializer.is_valid():
             guest_can_pause = serializer.data.get("guest_can_pause")
             votes_to_skip = serializer.data.get("votes_to_skip")
             code = serializer.data.get("code")

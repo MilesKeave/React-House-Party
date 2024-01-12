@@ -11,6 +11,8 @@ import RadioGroup from "@material-ui/core/RadioGroup";
 import FormControlLabel from "@material-ui/core/FormControlLabel";
 import { useNavigate } from "react-router";
 import { useState } from "react";
+import {Collapse} from "@material-ui/core";
+import Alert from "@material-ui/lab/Alert";
 
 
 function CreateRoomPage(props){
@@ -21,6 +23,8 @@ function CreateRoomPage(props){
     
     const [guestCanPause, setGuestCanPause] = useState(props.guestCanPause);
     const [votesToSkip, setVotesToSkip] = useState(props.votesToSkip);
+    const [sucessMsg, setSucessMsg] = useState("");
+    const [severity, setSeverity] = useState("success");
     const history = useNavigate();
    
 
@@ -49,8 +53,40 @@ function CreateRoomPage(props){
         
         fetch("/api/create-room", requestOptions).then((response) => 
         response.json()).then((data) => 
-        
         history("/room/" + data.code));
+
+    }
+
+    const requestOptions2 = {
+        method: "PATCH",
+        headers: {"Content-Type": "application/json", "Accept": "application/json",},
+        body: JSON.stringify({
+            votes_to_skip: votesToSkip,
+            guest_can_pause: guestCanPause,
+            code: props.roomCode
+        }),
+    };
+
+    const handleUpdateButtonPressed =()=>{
+        //console.log("yoooo");
+
+
+        fetch("/api/update-room", requestOptions2).then((response) => 
+        {if(response.ok){
+            setSucessMsg('room updated succesfully');
+            setSeverity("success");
+        }
+        else{
+            setSucessMsg( 'error updating');
+            setSeverity("error");
+        }
+    
+        props.updateCallBack();
+    }
+        
+    
+    );
+
 
     }
 
@@ -79,7 +115,7 @@ function CreateRoomPage(props){
 
         return(
             <Grid item xs = {12} align ="center">
-                    <Button color ="primary" variant = "contained" onClick = { handleRoomButtonPressed}>
+                    <Button color ="primary" variant = "contained" onClick = { handleUpdateButtonPressed}>
                         Update a Room
                     </Button>
                 </Grid>
@@ -92,6 +128,11 @@ function CreateRoomPage(props){
 
          <Grid container spacing = {1} >
             <Grid item xs = {12} align = "center">
+               <Collapse in={sucessMsg!= ''}>
+                {sucessMsg !="" ? <Alert severity ={severity} onClose={()=>{setSucessMsg("")}}>{sucessMsg}</Alert> : null}
+               </Collapse>
+            </Grid>
+            <Grid item xs = {12} align = "center">
                 <Typography component = "h4" variant = "h4">
                     {title}
                 </Typography>
@@ -103,7 +144,7 @@ function CreateRoomPage(props){
                         Guest Controll of Playback state
                     </div>
                    </FormHelperText>
-                   <RadioGroup row defaultValue="true" onChange={handleGuestCanPauseChange}>
+                   <RadioGroup row defaultValue={props.guestCanPause.toString()} onChange={handleGuestCanPauseChange}>
                     <FormControlLabel value = "true" 
                                     control = {<Radio color = "primary"></Radio>} 
                                     label = "Play/Pause" 
@@ -157,7 +198,7 @@ CreateRoomPage.defaultProps = {
     guestCanPause: true,
     update: false,
     roomCode: null,
-    updateCallBack: ()=>{},
+    updateCallBack: ()=>{ console.log("called")},
   };
 
 export default CreateRoomPage

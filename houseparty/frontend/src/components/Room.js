@@ -44,12 +44,42 @@ export function Room(props) {
     );
   } 
 
+  function updateRoomData(){
+    console.log("update");
+    fetch("/api/get-room" + "?code=" + roomCode)
+      .then(res => 
+        {
+
+        if(!res.ok){
+          props.leaveRoomCallback();
+          history("/");
+          //console.log(roomCode);
+
+        }
+        return res.json();}
+        )
+      .then(data => {
+        setRoomData({
+          ...roomData, 
+          votesToSkip: data.votes_to_skip,
+          guestCanPause: data.guest_can_pause,
+          isHost: data.is_host,
+        })
+      })
+
+
+  }
+
   const renderSettings = () =>{
 
     return(
       <Grid container spacing = {1}>
         <Grid item xs={12} align="center">
-          <CreateRoomPage update = {true} votesToSkip ={roomData.votesToSkip} guestCanPause ={roomData.guestCanPause} roomCode = {roomCode} updateCallBack = {null}
+          <CreateRoomPage update = {true} 
+          votesToSkip ={roomData.votesToSkip} 
+          guestCanPause ={roomData.guestCanPause} 
+          roomCode = {roomCode} 
+          updateCallBack = {()=>{updateRoomData()}}
           />
 
           
@@ -72,8 +102,10 @@ export function Room(props) {
   const leaveRoomPressed = ()=>{
 
     fetch("/api/leave-room", requestOptions).then((_response) =>{
-      //props.leaveRoomCallback();
+      props.leaveRoomCallback();
       console.log(props);
+      setRoomCode(null);
+
 
       history('/');
     });
@@ -84,12 +116,13 @@ export function Room(props) {
 
 
   useEffect(() => {
+    console.log("yelp");
     fetch("/api/get-room" + "?code=" + roomCode)
       .then(res => 
         {
 
         if(!res.ok){
-          //props.leaveRoomCallback();
+          props.leaveRoomCallback();
           history("/");
           //console.log(roomCode);
 
