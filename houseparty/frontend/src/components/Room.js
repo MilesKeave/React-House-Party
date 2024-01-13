@@ -24,16 +24,13 @@ export function Room(props) {
   };
 
   function authenticateSpotify(){
-    fetch('/spotify/is-authenicated').then((response) => response.json()).then((data)=> {
+    fetch('/spotify/is-authenticated').then((response) => response.json()).then((data)=> {
     setSpotifyAuthenticated(data.status);
     {if(!data.status){
       fetch("/spotify/get-auth-url").then((response)=> response.json()).then((data) => {
           window.location.replace(data.url)
 
       })
-
-
-
     }}
   }
 
@@ -87,7 +84,12 @@ export function Room(props) {
         });
         {if (roomData.isHost){
           authenticateSpotify();
-        }}
+        }
+        else{
+          console.log("roomData.isHost");
+          console.log(roomData.isHost);
+        }
+      }
       })
 
 
@@ -121,6 +123,7 @@ export function Room(props) {
 
     );
   }
+  
 
   const leaveRoomPressed = ()=>{
 
@@ -159,9 +162,12 @@ export function Room(props) {
           guestCanPause: data.guest_can_pause,
           isHost: data.is_host,
         });
-        {if (roomData.isHost){
+        
+        
+        if (data.is_host){
+          console.log('auth here 1');
           authenticateSpotify();
-        }}
+        } 
        
       })
   },[roomCode,setRoomData]) //It renders when the object changes .If we use roomData and/or roomCode then it rerenders infinite times
