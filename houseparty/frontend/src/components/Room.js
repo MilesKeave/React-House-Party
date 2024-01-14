@@ -14,7 +14,8 @@ export function Room(props) {
   const initialState = {
     votesToSkip: 2,
     guestCanPause: false,
-    isHost: false
+    isHost: false,
+    //song : { }
   }
   const [roomData, setRoomData] = useState(initialState) ;
 
@@ -48,6 +49,21 @@ export function Room(props) {
       setShowSetting(true)
     }
     console.log(showSetting);
+  }
+
+  function getCurrentSong(){
+    fetch("/spotify/current-song").then((response) => {
+
+      if (!response.ok){
+        return {};
+
+      }  
+      else{
+        return response.json();
+      }  
+    }).then((data)=> {
+    setRoomData({song: data});
+    console.log(data);});
   }
 
   const settingsButton = ()=>{
@@ -84,6 +100,7 @@ export function Room(props) {
         });
         {if (roomData.isHost){
           authenticateSpotify();
+          //getCurrentSong();
         }
         else{
           console.log("roomData.isHost");
@@ -167,6 +184,7 @@ export function Room(props) {
         if (data.is_host){
           console.log('auth here 1');
           authenticateSpotify();
+          //getCurrentSong();
         } 
        
       })
@@ -185,19 +203,10 @@ export function Room(props) {
           Code: {roomCode}
         </Typography>
       </Grid>
-      <Grid item xs = {12} align = "center">
-        Guest can Pause: {roomData.guestCanPause.toString()}
-        
-      </Grid>
-      <Grid item xs = {12} align = "center">
-      Votes: {roomData.votesToSkip}
-        
-      </Grid>
-      <Grid item xs = {12} align = "center">
-      Host: {roomData.isHost.toString()}
-        
-      </Grid>
-
+      {/* <p>
+      {JSON.stringify(roomData.song)}
+      </p>
+ */}
       {roomData.isHost? 
           settingsButton()
           : null
