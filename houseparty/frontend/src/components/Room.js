@@ -3,6 +3,7 @@ import { useParams } from 'react-router-dom';
 import {Grid, Button, Typography} from "@material-ui/core";
 import {Link, useNavigate} from 'react-router-dom';
 import CreateRoomPage from './CreateRoomPage';
+import MusicPlayer from './MusicPlayer';
 
 
 export function Room(props) {
@@ -11,13 +12,25 @@ export function Room(props) {
   const [roomCode, setRoomCode] = useState(params.roomCode);
   const [showSetting, setShowSetting] = useState(false);
   const [spotifyAuthenticated, setSpotifyAuthenticated] = useState(false);
+  const [count, setCount] = useState(0);
   const initialState = {
     votesToSkip: 2,
     guestCanPause: false,
     isHost: false,
-    //song : { }
   }
   const [roomData, setRoomData] = useState(initialState) ;
+  const initialSong = {
+    title: "",
+    artist:"",
+    duration:"",
+    progress:"",
+    is_playing:"",
+    is_playing: "",
+    votes: "",
+    id: ""
+  }
+
+  const [song, setSong] = useState(initialSong)
 
   const requestOptions = {
     method: "POST",
@@ -55,14 +68,24 @@ export function Room(props) {
     fetch("/spotify/current-song").then((response) => {
 
       if (!response.ok){
+        console.log("not ok song response");
         return {};
-
       }  
       else{
         return response.json();
       }  
     }).then((data)=> {
-    setRoomData({song: data});
+    setSong(
+      {title: data.title,
+    artist: data.artist,
+    duration: data.duration,
+    progress:data.progress,
+    image_url: data.image_url,
+    is_playing: data.is_playing,
+    votes: data.votes,
+    id: data.id
+
+  });
     console.log(data);});
   }
 
@@ -100,7 +123,7 @@ export function Room(props) {
         });
         {if (roomData.isHost){
           authenticateSpotify();
-          //getCurrentSong();
+          getCurrentSong();
         }
         else{
           console.log("roomData.isHost");
@@ -157,6 +180,18 @@ export function Room(props) {
 
   }
 
+  useEffect(()=>{
+    
+    let intervalId = setInterval(()=>{getCurrentSong();
+      setCount(count + 1);}
+    
+    ,1000);
+    return(() => {
+        setCount(count + 1);
+        clearInterval(intervalId)
+    });
+},[count]); 
+
 
   useEffect(() => {
     console.log("yelp");
@@ -184,7 +219,7 @@ export function Room(props) {
         if (data.is_host){
           console.log('auth here 1');
           authenticateSpotify();
-          //getCurrentSong();
+          getCurrentSong();
         } 
        
       })
@@ -203,10 +238,7 @@ export function Room(props) {
           Code: {roomCode}
         </Typography>
       </Grid>
-      {/* <p>
-      {JSON.stringify(roomData.song)}
-      </p>
- */}
+      <MusicPlayer song = {song}/>
       {roomData.isHost? 
           settingsButton()
           : null
