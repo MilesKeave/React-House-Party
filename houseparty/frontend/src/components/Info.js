@@ -30,7 +30,7 @@ export default function Info(){
             <Grid item xs={12} align = "center">
                 <Typography component = "h4" variant = "h4">
                 {"What Is HouseParty?"}
-          a      </Typography>
+               </Typography>
             </Grid>
             <Grid item xs={12} align = "center">
                 <Typography variant = "body">
