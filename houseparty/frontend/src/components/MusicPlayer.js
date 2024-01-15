@@ -12,9 +12,11 @@ import PauseIcon from "@material-ui/icons/Pause";
 export default function MusicPlayer({song}){
     const [songProgress, setSongProgress] = useState(0);
 
+    const initialSong = "img/Screenshot 2024-01-15 at 2.37.11 PM.png";
+
     const containerStyles = {
         height: 20,
-        width: '90%',
+        
         backgroundColor: "#e0e0de",
         borderRadius: 50,
         margin: 50
@@ -33,6 +35,11 @@ export default function MusicPlayer({song}){
         color: 'white',
         fontWeight: 'bold'
       }
+
+    
+    
+
+    
 
     
 
@@ -73,18 +80,28 @@ export default function MusicPlayer({song}){
 
 
     return(
+     
+
         <Card>
 
             <Grid container alignItems="center">
-
-                <Grid item align="center" xs={4}>
-                    <img src={song.image_url} height = "100%" width = "100%"/>
-
-                </Grid>
+                {song.image_url == undefined? 
+                    
+                    <Grid item align="center" xs={4}>
+                        <img src="https://img.freepik.com/premium-vector/realistic-vinyl-disc-mockup-empty-blank-music-album-cover-isolated-white-background-retro-musical-long-play-white-template-paper-box-3d-vector-illustration_341509-1731.jpg?w=900" height = "100%" width = "100%"/>
+                    </Grid>
+               :
+                    <Grid item align="center" xs={4}>
+                        <img src={song.image_url} height = "100%" width = "100%"/>
+                    </Grid>
+                } 
                 <Grid item align="center" xs={8}>
-                    <Typography component ="h5" variant = "h5">
+                    {song.title == ""? <Typography component ="h5" variant = "h5">
+                        {"No Song Currently Playing"}
+                    </Typography>: <Typography component ="h5" variant = "h5">
                         {song.title}
-                    </Typography>
+                    </Typography> }
+                    
                     <Typography color="textSecondary" variant = "subtitle1">
                         {song.artist}
                     </Typography>
@@ -122,7 +139,7 @@ export default function MusicPlayer({song}){
             </p>
             
         </Card>
-
+      
 
     );
 
