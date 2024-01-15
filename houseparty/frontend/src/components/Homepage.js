@@ -6,6 +6,8 @@ import Room from "./Room";
 import Info from "./Info";
 import {Grid, Typography, Button, ButtonGroup} from "@material-ui/core";
 
+
+
 import {
     BrowserRouter as Router,
     Routes,
@@ -26,6 +28,8 @@ export default class Homepage extends Component {
         };
         this.clearRoomCode = this.clearRoomCode.bind(this);
     }
+
+    
 
     
 
@@ -98,6 +102,7 @@ export default class Homepage extends Component {
         
           renderHomePage(){
             return (
+              
               <Grid container spacing={3}>
                 <Grid item xs={12} align="center">
                   <Typography variant="h3" compact="h3">
@@ -118,6 +123,7 @@ export default class Homepage extends Component {
                   </ButtonGroup>
                 </Grid>
               </Grid>
+             
             );
           }
 
