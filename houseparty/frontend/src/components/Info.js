@@ -16,10 +16,12 @@ export default function Info(){
     const [page, setPage] = useState(pages.JOIN)
 
     function JoinInfo(){
-        return "Join Info"
+        return (
+            "Join Info: Join a room by entering the room code in join a room page"
+        );
     }
     function CreateInfo(){
-        return "Create Info"
+        return "Create Info: Create a room and edit the settings to allow members to play/pause or vote to skip a song. Make sure you play a song on spotify to start the session."
     }
 
     return(
