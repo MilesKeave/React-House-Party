@@ -27,6 +27,7 @@ export function Room(props) {
     is_playing:"",
     is_playing: "",
     votes: "",
+    votes_required: "",
     id: ""
   }
 
@@ -83,6 +84,7 @@ export function Room(props) {
     image_url: data.image_url,
     is_playing: data.is_playing,
     votes: data.votes,
+    votes_required: data.votes_required,
     id: data.id
 
   });

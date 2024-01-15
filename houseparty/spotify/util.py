@@ -12,10 +12,12 @@ def get_user_tokens(session_id):
     if user_tokens.exists():
         return user_tokens[0]
     else:
+        
         return None
 
 def update_or_create_user_token(session_id,access_token, token_type, expires_in, refresh_token):
     tokens = get_user_tokens(session_id)
+    
     print(expires_in)
     expires_in = timezone.now() + timedelta(seconds = expires_in)
 
@@ -54,9 +56,15 @@ def refresh_spotify_token(session_id):
 
     }).json()
 
+    
+
     access_token = response.get("access_token")
     token_type = response.get("token_type")
-    expires_in = response.get("expires_in")
+    expires_in = int(response.get("expires_in"))
+
+    print(access_token)
+    print(token_type)
+    print(expires_in)
     
 
     update_or_create_user_token(session_id, access_token, token_type, refresh_token, expires_in)
