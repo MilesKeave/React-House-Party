@@ -3,6 +3,7 @@ import CreateRoomPage from "./CreateRoomPage";
 import RoomJoinPage from "./RoomJoinPage";
 import Home from "./Home";
 import Room from "./Room";
+import Info from "./Info";
 import {Grid, Typography, Button, ButtonGroup} from "@material-ui/core";
 
 import {
@@ -108,6 +109,9 @@ export default class Homepage extends Component {
                     <Button color="primary" to="/join" component={Link}>
                       Join a Room
                     </Button>
+                    <Button color="grey" to="/info" component={Link}>
+                      Info
+                    </Button>
                     <Button color="secondary" to="/create" component={Link}>
                       Create a Room
                     </Button>
@@ -136,6 +140,7 @@ export default class Homepage extends Component {
                 <Route path = "/" element = {this.state.roomCode ? <Navigate to={`/room/${this.state.roomCode}`} /> :this.renderHomePage()}/>
                 <Route path = "/join" element = {<RoomJoinPage/>}/> 
                 <Route path = "/create" element = {<CreateRoomPage update={false}/>}/>
+                <Route path = "/info" element = {<Info/>}/>
                 <Route path = "/room/:roomCode" /* element = {<Room/>} /> */
                 element={<Room leaveRoomCallback={this.clearRoomCode}/>} />
                 </Routes>

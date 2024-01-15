@@ -129,7 +129,7 @@ class PlaySong(APIView):
         return Response({}, status=status.HTTP_403_FORBIDDEN)
 
 class PauseSong(APIView):
-    def put(self, request, format=None):
+    def put(self, response, format=None):
         room_code = self.request.session.get("room_code")
         room= Room.objects.filter(code = room_code)[0]
         if self.request.session.session_key ==room.host or room.guest_can_pause:
@@ -141,7 +141,7 @@ class PauseSong(APIView):
 
 
 class SkipSong(APIView):
-    def post(self, request, format=None):
+    def post(self, response, format=None):
         room_code = self.request.session.get("room_code")
         room= Room.objects.filter(code = room_code)[0]
         votes = Vote.objects.filter(room=room, song_id=room.current_song)
@@ -154,7 +154,7 @@ class SkipSong(APIView):
             vote = Vote(user=self.request.session.session_key, room = room, song_id = room.current_song )
             vote.save()
 
-        return Response({}, status=status.HTTP_204_NO_CONTENT)
+        return Response({}, status.HTTP_204_NO_CONTENT)
     
 
         
